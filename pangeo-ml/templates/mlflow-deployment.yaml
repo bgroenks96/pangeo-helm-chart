@@ -1,0 +1,45 @@
+# define deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow-tracking
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: mlflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      containers:
+        - name: mlflow-server
+          image: seeloz/mlflow-server
+          ports:
+            - containerPort: 5000
+          env:
+            - name: MLFLOW_VERSION
+              value: {{ .Values.mlflow.version }}
+            - name: ARTIFACT_ROOT
+              value: {{ .Values.mlflow.artifactUri }}
+            - name: BACKEND_PROTOCOL
+              value: {{ .Values.mlflow.backend.protocol }}
+            - name: BACKEND_USER
+              value: {{ .Values.mlflow.backend.user }}
+            - name: BACKEND_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mlflow.backend.passwordSecret }}
+                  key: {{ .Values.mlflow.backend.passwordSecretKey }}
+            - name: BACKEND_HOST
+              value: {{ .Values.mlflow.backend.hostname }}
+            - name: BACKEND_PORT
+              value: "{{ .Values.mlflow.backend.port }}"
+            - name: BACKEND_DB
+              value: {{ .Values.mlflow.backend.db }}
+            - name: BACKEND_URI
+              value: "$(BACKEND_PROTOCOL)://$(BACKEND_USER):$(BACKEND_PASS)@$(BACKEND_HOST):$(BACKEND_PORT)/$(BACKEND_DB)"

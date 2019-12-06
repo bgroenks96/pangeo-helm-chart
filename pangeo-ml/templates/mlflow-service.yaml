@@ -1,0 +1,14 @@
+# define service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow-endpoint
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: mlflow
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000

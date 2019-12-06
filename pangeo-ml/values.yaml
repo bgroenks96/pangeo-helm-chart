@@ -1,0 +1,81 @@
+# Pangeo configuration values
+# --------------------
+# The following configuration options are specifically for the custom Pangeo components.
+# Some values will be inherited into the dependent chart configs. See requirements.yaml for info.
+
+# Create and use roles and service accounts on an RBAC enabled cluster.
+rbac:
+  enabled: true
+  
+mlflow:
+  version: 1.4.0
+  artifactUri: "file:///artifacts/"
+  backend:
+    protocol: mysql
+    user: pangeo
+    passwordSecret: pangeohub-mysql
+    passwordSecretKey: mysql-password
+    hostname: pangeohub-mysql
+    port: "3306"
+    db: mlflow
+
+# Dependency configuration values
+# -------------------------------
+# To configure dependencies you must create a key with the name of the dependency
+# and then configure as per the dependent chart's values.yaml. Don't forget to indent!
+
+jupyterhub:
+  # Helm config for jupyterhub goes here
+  # See https://github.com/jupyterhub/zero-to-jupyterhub-k8s/blob/master/jupyterhub/values.yaml
+
+  singleuser:
+    nodeSelector:
+      group: worker
+    image:
+      name: gcr.io/thesis-research-255223/pangeo-ml
+      tag: 0.5
+    defaultUrl: "/lab"
+    serviceAccountName: daskkubernetes
+    storage:
+      extraVolumes:
+        - name: mysql-credentials
+          secret:
+            secretName: pangeohub-mysql
+      extraVolumeMounts:
+        - name: mysql-credentials
+          mountPath: /var/secrets/mysql
+    profileList:
+      - display_name: "Standard"
+        description: |
+          Default CPU-only configuration as specified by deployment.
+        default: True
+      - display_name: "GPU"
+        description: |
+          GPU enabled pangeo-ml configuration
+        kubespawner_override:
+          image: gcr.io/thesis-research-255223/pangeo-ml-gpu:0.5
+          cpu_limit: 4
+          mem_limit: "16G"
+          extra_resource_limits:
+            nvidia.com/gpu: "1"
+  prePuller:
+    hook:
+      enabled: false
+  # optimizations: see https://zero-to-jupyterhub.readthedocs.io/en/latest/optimization.html?highlight=scheduling#optimizations
+  scheduling:
+    userScheduler:
+      enabled: true
+      replicas: 1
+    podPriority:
+      enabled: true
+    userPlaceholder:
+      enabled: false
+      replicas: 1
+
+mysql:
+  mysqlDatabase: mlflow
+  mysqlUser: pangeo
+  initializationFiles:
+    init-user.sql: |-
+      grant all privileges on mlflow.* TO pangeo@pangeohub-mysql;
+
