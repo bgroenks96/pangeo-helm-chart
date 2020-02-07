@@ -7,17 +7,17 @@
 rbac:
   enabled: true
   
-mlflow:
-  version: 1.4.0
-  artifactUri: "file:///artifacts/"
-  backend:
-    protocol: mysql
-    user: pangeo
-    passwordSecret: pangeohub-mysql
-    passwordSecretKey: mysql-password
-    hostname: pangeohub-mysql
-    port: "3306"
-    db: mlflow
+#mlflow:
+#  version: 1.4.0
+#  artifactUri: "file:///artifacts/"
+#  backend:
+#    protocol: mysql
+#    user: pangeo
+#    passwordSecret: pangeohub-mysql
+#    passwordSecretKey: mysql-password
+#    hostname: pangeohub-mysql
+#    port: "3306"
+#    db: mlflow
 
 # Dependency configuration values
 # -------------------------------
@@ -62,6 +62,15 @@ jupyterhub:
           mem_limit: "16G"
           extra_resource_limits:
             nvidia.com/gpu: "1"
+      - display_name: "Dual-GPU"
+        description: |
+          Dual GPU enabled pangeo-ml configuration
+        kubespawner_override:
+          image: gcr.io/thesis-research-255223/pangeo-ml-gpu:2019.12.8.1
+          cpu_limit: 4
+          mem_limit: "16G"
+          extra_resource_limits:
+            nvidia.com/gpu: "2"
   prePuller:
     hook:
       enabled: false
@@ -76,10 +85,10 @@ jupyterhub:
       enabled: false
       replicas: 1
 
-mysql:
-  mysqlDatabase: mlflow
-  mysqlUser: pangeo
-  initializationFiles:
-    init-user.sql: |-
-      grant all privileges on mlflow.* TO pangeo@pangeohub-mysql;
+#mysql:
+#  mysqlDatabase: mlflow
+#  mysqlUser: pangeo
+#  initializationFiles:
+#    init-user.sql: |-
+#      grant all privileges on mlflow.* TO pangeo@pangeohub-mysql;
 

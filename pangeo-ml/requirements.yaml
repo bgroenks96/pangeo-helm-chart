@@ -6,7 +6,7 @@ dependencies:
   import-values:
     - child: rbac
       parent: rbac
-- name: mysql
-  version: "1.4.0"
-  repository: '@stable'
+#- name: mysql
+#  version: "1.4.0"
+#  repository: '@stable'
 
