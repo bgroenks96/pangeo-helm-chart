@@ -42,12 +42,12 @@ jupyterhub:
     serviceAccountName: daskkubernetes
     storage:
       extraVolumes:
-        - name: mysql-credentials
-          secret:
-            secretName: pangeohub-mysql
-      extraVolumeMounts:
-        - name: mysql-credentials
-          mountPath: /var/secrets/mysql
+#        - name: mysql-credentials
+#          secret:
+#            secretName: pangeohub-mysql
+#      extraVolumeMounts:
+#        - name: mysql-credentials
+#          mountPath: /var/secrets/mysql
     profileList:
       - display_name: "Standard"
         description: |
@@ -57,7 +57,7 @@ jupyterhub:
         description: |
           GPU enabled pangeo-ml configuration
         kubespawner_override:
-          image: gcr.io/thesis-research-255223/pangeo-ml-gpu:2019.12.8.1
+          image: gcr.io/thesis-research-255223/pangeo-ml-gpu:2020.02.06.1
           cpu_limit: 4
           mem_limit: "16G"
           extra_resource_limits:
@@ -66,7 +66,7 @@ jupyterhub:
         description: |
           Dual GPU enabled pangeo-ml configuration
         kubespawner_override:
-          image: gcr.io/thesis-research-255223/pangeo-ml-gpu:2019.12.8.1
+          image: gcr.io/thesis-research-255223/pangeo-ml-gpu:2020.02.06.1
           cpu_limit: 4
           mem_limit: "16G"
           extra_resource_limits:
